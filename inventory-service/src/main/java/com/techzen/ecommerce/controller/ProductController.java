@@ -2,6 +2,7 @@ package com.techzen.ecommerce.controller;
 
 import com.techzen.ecommerce.dtos.ProductDto;
 import com.techzen.ecommerce.services.ProductService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cloud.client.ServiceInstance;
@@ -25,11 +26,12 @@ public class ProductController {
     private final RestClient restClient;
 
     @GetMapping("/fetchOrder")
-    public String fetchFromOrderService() {
-        ServiceInstance orderService = discoveryClient.getInstances("order-service").get(0);
+    public String fetchFromOrderService(HttpServletRequest httpServletRequest) {
+        log.info(httpServletRequest.getHeader("X-Custom-Header"));
 
+        ServiceInstance orderService = discoveryClient.getInstances("order-service").get(0);
         return restClient.get()
-                .uri(orderService.getUri()+"/api/v1/orders/helloOrders")
+                .uri(orderService.getUri()+"/orders/core/helloOrders")
                 .retrieve()
                 .body(String.class);
     }
